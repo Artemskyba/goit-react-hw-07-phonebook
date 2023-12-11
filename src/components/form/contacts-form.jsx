@@ -2,8 +2,9 @@ import { Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { AddButton, Form } from './contacts-form.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'redux/contactsSlice';
-import { nanoid } from '@reduxjs/toolkit';
+
+import { selectContacts } from 'redux/selectors';
+import { addContact } from 'redux/operations';
 
 const contactSchema = Yup.object().shape({
   userName: Yup.string()
@@ -11,15 +12,15 @@ const contactSchema = Yup.object().shape({
     .required('Required'),
   userNumber: Yup.string()
     .matches(
-      /^[0-9]{3}-[0-9]{2}-[0-9]{2}$/,
-      'Must be a number format of 123-45-67'
+      /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/,
+      'Must be a number format of 123-456-7890'
     )
     .required('Required'),
 });
 
 export const ContactForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts);
+  const contacts = useSelector(selectContacts);
 
   return (
     <>
@@ -37,9 +38,7 @@ export const ContactForm = () => {
           if (existContact) {
             alert(`${userName} is already in contacts`);
           } else {
-            dispatch(
-              addContact({ id: nanoid(), name: userName, number: userNumber })
-            );
+            dispatch(addContact({ name: userName, phone: userNumber }));
             actions.resetForm();
           }
         }}
